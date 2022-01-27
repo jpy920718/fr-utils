@@ -59,23 +59,4 @@ export default [
     ],
     exclude: 'node_modules/**',
   },
-  {
-    input: 'src/index.ts',
-    output: [
-      {
-        file: 'dist/index.cjs.js',
-        format: 'cjs',
-      },
-    ],
-    plugins: [
-      workerLoader(),
-      typescript(),
-      replace({
-        ENV: JSON.stringify('node'),
-      }),
-      terser(),
-      // obfuscatorPlugin(obfuscatorOptions),
-    ],
-    exclude: 'node_modules/**',
-  },
 ];

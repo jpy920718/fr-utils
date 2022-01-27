@@ -1,13 +1,13 @@
 import SparkMD5 from 'spark-md5';
 
 import FileReader from '../FileReader';
-import WebWorker from 'web-worker:../work/md5.worker.ts';
+import WebWorker from 'web-worker:../works/md5.worker.ts';
 /**
  * 获取文件的MD5值，不使用web-worker
  * @param file
  * @returns
  */
-export async function readMd5(file: Blob): Promise<string> {
+export async function getMd5(file: Blob): Promise<string> {
   const filereader = new FileReader();
   const result: any = await filereader.readAsArrayBuffer(file);
   const spark = new SparkMD5.ArrayBuffer();
@@ -22,7 +22,7 @@ export async function readMd5(file: Blob): Promise<string> {
  * @param file
  */
 
-export function getMd5Sample(file: Blob) {
+export function getMd5WithWorker(file: Blob) {
   return new Promise((resolve, reject) => {
     const worker = new WebWorker();
     worker.postMessage(file);

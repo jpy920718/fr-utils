@@ -1,5 +1,5 @@
 import { range, max } from 'lodash';
-import WebWorker from 'web-worker:../work/md5.worker.ts';
+import WebWorker from 'web-worker:../works/md5.worker.ts';
 /**
  * 文件切片
  * @param file
@@ -41,6 +41,7 @@ export function sliceFile(file: Blob, options: SliceOptionType = {}) {
       fileChunkList,
       getChunksMD5,
     };
+  } else {
+    throw "Parameter file must pass"
   }
-  return {};
 }
