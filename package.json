@@ -6,7 +6,6 @@
   "types": "types/index.d.ts",
   "scripts": {
     "build": "rimraf dist && rollup -c",
-    "build:types": "rimraf dist && tsc",
     "start": "rimraf dist && rollup -w -c",
     "test": "echo '// TODO test'"
   },

@@ -42,6 +42,6 @@ export function sliceFile(file: Blob, options: SliceOptionType = {}) {
       getChunksMD5,
     };
   } else {
-    throw "Parameter file must pass"
+    return {};
   }
 }
