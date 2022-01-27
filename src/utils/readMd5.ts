@@ -3,7 +3,7 @@ import SparkMD5 from 'spark-md5';
 import FileReader from '../FileReader';
 import WebWorker from 'web-worker:../work/md5.worker.ts';
 /**
- * 获取文件的MD5值
+ * 获取文件的MD5值，不使用web-worker
  * @param file
  * @returns
  */
@@ -17,7 +17,7 @@ export async function readMd5(file: Blob): Promise<string> {
 }
 
 /**
- * 文件全量MD5计算
+ * 文件全量MD5计算, 使用web-worker
  *
  * @param file
  */

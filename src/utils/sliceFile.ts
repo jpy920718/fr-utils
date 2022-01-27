@@ -9,10 +9,10 @@ import WebWorker from 'web-worker:../work/md5.worker.ts';
 type SliceOptionType = {
   size?: number;
 };
-export async function sliceFile(file: Blob, options: SliceOptionType = {}) {
+export function sliceFile(file: Blob, options: SliceOptionType = {}) {
   if (file) {
     const { size } = options;
-    const chunkSize = (size ?? 1) * 1024 * 1024,
+    const chunkSize = (size ?? 2) * 1024 * 1024,
       chunks = Math.ceil(file.size / chunkSize); // 切片后的总chunk数
 
     const fileChunkList = range(chunks).map((chunkIndex) => {
