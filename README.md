@@ -2,6 +2,9 @@
 
 # @sbs/file-utils
 
+文件处理公共方法，包括文件读取，大文件hash计算，大文件切片处理。
+
+
 ```bash
 yarn add @sbs/file-uitls
 ```

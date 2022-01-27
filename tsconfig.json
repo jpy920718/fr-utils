@@ -17,7 +17,7 @@
     "strictNullChecks": true,
     "target": "es5",
     "traceResolution": false,
-    "downlevelIteration": true
+    "downlevelIteration": true,
   },
   "include": ["./src", "./types/*.d.ts"]
 }
