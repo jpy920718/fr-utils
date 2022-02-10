@@ -10,95 +10,82 @@
   yarn add @sbs/file-uitls
 ```
 
-浏览器引入
-
-```js
-<script src="path/@sbs/file-utils/dist/index.js"></script>
-//全局使用FileUtils
-```
-
-## 使用方式
-
-通过创建示例的方式
-
-```typescript
-import { FileUtils } from '@sbs/file-utils';
-const reader = new FileUtils(file);
-```
-
-通过静态方法
-
-```typescript
-import { FileUtils } from '@sbs/file-utils';
-```
-
-## Api
-
-### FileUtils.md5
-
-FileUtils.md5(file, opitons)
-
 ## 文读取方式
 
 对原生 FileReader 进行封装，异步获取文件读取结果，已提供的读取方式 3 中，`readAsArrayBuffer` `readAsDataURL` `readAsText`,使用方式如下：
+
+> 通过实例的方式读取文件，file 参数可通过构造函数传递 `new FileUtils(file)`
 
 ```typescript
 import { FileUtils } from '@sbs/file-utils';
 
 const readFile = async (file: File) => {
+  // 1. 通过实例方法
   const filereader = new FileUtils();
-  const result = filereader.readAsArrayBuffer(file);
+  const result = await filereader.readAsArrayBuffer(file);
+
+  // 2. 直接使用FileUtils的静态方法
+
+  const result = await FileUtils.readAsArrayBuffer(file);
 };
 ```
 
 ## 文件 Hash 计算
 
-### getMd5
-
-计算文件 MD5 值，此方法未使用 web-worker 独立线程计算。大文件计算 MD5 会阻塞 js 线程，对于大文件推荐使用`getMd5WithWorker`。
+- 不使用 webworker 计算 hash
 
 ```typescript
-import { getMd5 } from '@sbs/file-utils';
-const readMd5 = async (file: File) => {
-  const md5 = await getMd5(file);
+import { FileUtils } from '@sbs/file-utils';
+const readMd5 = async (file) => {
+  // 1. 通过实例方法
+  const reader = new FileUtils();
+  const md5 = reader.md5(file);
+  // 2. 直接使用 FileUtils的静态方法
+  const md5 = await FileUtils.md5(file);
 };
 ```
 
-### getMd5WithWorker
-
-此方法可用来计算大文件 MD5 值。
+- 使用 webworker 计算 hash
 
 ```typescript
-import { getMd5WithWorker } from '@sbs/file-utils';
-
-const readMd5 = async() => {
-  getMd5WithWorker(file: File).then(md5 => {
-    // 其他操作
-  })
-}
+import { FileUtils } from '@sbs/file-utils';
+const readMd5 = async (file) => {
+  // 1. 通过实例方法
+  const reader = new FileUtils();
+  const md5 = reader.md5(file, { useWorker: true });
+  // 2. 直接使用 FileUtils的静态方法
+  const md5 = await FileUtils.md5(file, { useWorker: true });
+};
 ```
 
 ## 文件切片
 
-### sliceFile
+通过调用 slice 方法实现文件切片
 
-文件切片方法，默认每片的大小未 2M, 返回切片总数，和切片数组。
+返回参数:
 
-#### Params
+- chunks 切片数组
+- md5s 切片 md5 值
 
-| 参数    | 说明         | 类型                        |
-| ------- | ------------ | --------------------------- |
-| file    | 文件         | Blob \| File                |
-| Options | 文件切割配置 | {<br />size?: number<br />} |
+```typescript
+import { FileUtils } from '@sbs/file-utils';
 
-#### Return
+const sliceFile = async () => {
+  // 1. 通过实例方法
+  const reader = new FileUtils();
+  const { chunks, md5s } = await reader.slice(file);
 
-| 参数          | 说明                  | 类型                    |
-| ------------- | --------------------- | ----------------------- |
-| chunks        | 切片数量              | number                  |
-| fileChunkList | 切片数组              | Blob[]                  |
-| getChunksMD5  | 获取每个切片的 MD5 值 | () => Promise<string[]> |
+  // 2. 直接使用FileUtiles的静态方法
+  const { chunks, md5s } = await FileUtils.slice(file);
+};
+```
 
-## feature
+> 所有的实例方法使用的参数也可通过构造函数传递 `new FileUtils(file, options)`
 
-- [ ] 使用时间切片 requestIdleCallback 处理 md5 值得计算
+### options 说明
+| 参数      | 说明                                        | 类型    |
+| --------- | ------------------------------------------- | ------- |
+| useWorker | 是否使用worker 线程计算hash，默认false      | Boolean |
+| useMd5    | 切片操作时是否给分片计算hash，默认true      | Boolean |
+| sliceSize | 切片操作时文件分片的大小，单位M，默认每片2M | Number  |
+

@@ -65,7 +65,8 @@ export default class FileUtils {
     fileExist(file);
     return FileUtils.readAs(file, 'readAsArrayBuffer') as Promise<ArrayBuffer>;
   }
-  readAsArrayBuffer(file: Blob) {
+  readAsArrayBuffer(file?: Blob) {
+    file = file ?? this.file!
     return FileUtils.readAsArrayBuffer(file);
   }
 
@@ -74,6 +75,7 @@ export default class FileUtils {
     return FileUtils.readAs(file, 'readAsDataURL') as Promise<string>;
   }
   readAsDataURL(file: Blob) {
+    file = file ?? this.file!
     return FileUtils.readAsDataURL(file);
   }
 
@@ -82,6 +84,7 @@ export default class FileUtils {
     return FileUtils.readAs(file, 'readAsText') as Promise<string>;
   }
   readAsText(file: Blob) {
+    file = file ?? this.file!
     return FileUtils.readAsText(file);
   }
 

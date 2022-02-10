@@ -9,12 +9,6 @@ declare module 'shared-worker:*' {
 }
 declare function importScripts(...urls: string[]): void;
 
-interface SliceReturnType {
-  chunks: number;
-  fileChunkList: Blob[];
-  getChunksMD5: () => Promise<string[]>;
-}
-
 type SliceOptionType = {
   useMd5?: boolean; // 是否返回分片md5 默认true
   sliceSize?: number; // 切片的分片大小 单位 M 默认为2
@@ -22,7 +16,10 @@ type SliceOptionType = {
 declare interface FileUtilsOptions extends SliceOptionType {
   useWorker?: boolean; // 是否使用web-worker 计算文件hash, 默认：false
 }
-
+interface SliceReturnType {
+  chunks: Blob[];
+  md5s?: string[];
+}
 export declare class FileUtils {
   constructor(file?: Blob, options?: FileUtilsOptions);
   static readAsArrayBuffer(file: Blob): Promise<ArrayBuffer>;
@@ -32,25 +29,13 @@ export declare class FileUtils {
   static slice(
     file: Blob,
     options?: FileUtilsOptions,
-  ): Promise<{
-    blobList: Blob[];
-    md5List: string[];
-  }>;
+  ): Promise<SliceReturnType>;
   readAsArrayBuffer(file?: Blob): Promise<ArrayBuffer>;
   readAsDataURL(file?: Blob): Promise<string>;
   readAsText(file?: Blob): Promise<string>;
 
   md5(options?: FileUtilsOptions): Promise<string>;
   md5(file: Blob, options?: FileUtilsOptions): Promise<string>;
-  slice(options?: FileUtilsOptions): Promise<{
-    blobList: Blob[];
-    md5List: string[];
-  }>;
-  slice(
-    file?: Blob,
-    options?: FileUtilsOptions,
-  ): Promise<{
-    blobList: Blob[];
-    md5List: string[];
-  }>;
+  slice(options?: FileUtilsOptions): Promise<SliceReturnType>;
+  slice(file?: Blob, options?: FileUtilsOptions): Promise<SliceReturnType>;
 }
