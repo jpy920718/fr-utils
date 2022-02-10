@@ -9,24 +9,48 @@ declare module 'shared-worker:*' {
 }
 declare function importScripts(...urls: string[]): void;
 
-type SliceOptionType = {
-  size?: number;
-};
 interface SliceReturnType {
   chunks: number;
   fileChunkList: Blob[];
   getChunksMD5: () => Promise<string[]>;
 }
-export declare function getMd5(file: Blob): Promise<string>;
-export declare function getMd5WithWorker(file: Blob): Promise<any>;
 
-export declare function sliceFile(
-  file: Blob,
-  options?: SliceOptionType,
-): SliceReturnType;
+type SliceOptionType = {
+  useMd5?: boolean; // 是否返回分片md5 默认true
+  sliceSize?: number; // 切片的分片大小 单位 M 默认为2
+};
+declare interface FileUtilsOptions extends SliceOptionType {
+  useWorker?: boolean; // 是否使用web-worker 计算文件hash, 默认：false
+}
 
-export declare class FileReaderPromise {
-  readAsArrayBuffer(file: Blob): Promise<ArrayBuffer>;
-  readAsDataURL(file: Blob): Promise<string>;
-  readAsText(file: Blob): Promise<string>;
+export declare class FileUtils {
+  constructor(file?: Blob, options?: FileUtilsOptions);
+  static readAsArrayBuffer(file: Blob): Promise<ArrayBuffer>;
+  static readAsDataURL(file: Blob): Promise<string>;
+  static readAsText(file: Blob): Promise<string>;
+  static md5(file: Blob, options?: FileUtilsOptions): Promise<string>;
+  static slice(
+    file: Blob,
+    options?: FileUtilsOptions,
+  ): Promise<{
+    blobList: Blob[];
+    md5List: string[];
+  }>;
+  readAsArrayBuffer(file?: Blob): Promise<ArrayBuffer>;
+  readAsDataURL(file?: Blob): Promise<string>;
+  readAsText(file?: Blob): Promise<string>;
+
+  md5(options?: FileUtilsOptions): Promise<string>;
+  md5(file: Blob, options?: FileUtilsOptions): Promise<string>;
+  slice(options?: FileUtilsOptions): Promise<{
+    blobList: Blob[];
+    md5List: string[];
+  }>;
+  slice(
+    file?: Blob,
+    options?: FileUtilsOptions,
+  ): Promise<{
+    blobList: Blob[];
+    md5List: string[];
+  }>;
 }

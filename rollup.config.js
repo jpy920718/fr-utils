@@ -1,7 +1,9 @@
 import typescript from '@rollup/plugin-typescript';
-import replace from '@rollup/plugin-replace';
 
+import { defineConfig } from 'rollup';
 import { terser } from 'rollup-plugin-terser';
+import { nodeResolve } from '@rollup/plugin-node-resolve';
+import commonjs from '@rollup/plugin-commonjs';
 import workerLoader from 'rollup-plugin-web-worker-loader';
 // 如果需要深度代码混淆，可开启obfuscator
 // import obfuscatorPlugin from 'rollup-plugin-javascript-obfuscator';
@@ -18,45 +20,22 @@ import workerLoader from 'rollup-plugin-web-worker-loader';
 //   deadCodeInjectionThreshold: 0.4,
 // };
 
-export default [
-  {
-    input: 'src/index.ts',
-    output: [
-      {
-        file: 'dist/index.js',
-        format: 'esm',
-        name: '@sbs/file-utils', // 输出的全局对象名，需要自定义
-      },
-    ],
-    plugins: [
-      workerLoader(),
-      typescript(),
-      replace({
-        ENV: JSON.stringify('esm'),
-      }),
-      terser(),
-      // obfuscatorPlugin(obfuscatorOptions),
-    ],
+export default defineConfig({
+  input: 'src/index.ts',
+  output: [
+    {
+      file: 'dist/index.esm.js',
+      format: 'esm',
+      name: 'FileUtils',
+    },
+    {
+      file: 'dist/index.js',
+      format: 'umd',
+      name: 'FileUtils',
+    },
+  ],
+  plugins: [workerLoader(), typescript(), terser()],
+  watch: {
     exclude: 'node_modules/**',
   },
-  {
-    input: 'src/index.ts',
-    output: [
-      {
-        file: 'dist/index.browser.js',
-        format: 'umd',
-        name: '@sbs/file-utils', // 输出的全局对象名，需要自定义
-      },
-    ],
-    plugins: [
-      workerLoader(),
-      typescript(),
-      replace({
-        ENV: JSON.stringify('browser'),
-      }),
-      terser(),
-      // obfuscatorPlugin(obfuscatorOptions),
-    ],
-    exclude: 'node_modules/**',
-  },
-];
+});

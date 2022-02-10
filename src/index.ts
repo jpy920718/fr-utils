@@ -1,3 +1,1 @@
-export { default as FileReader } from './FileReader';
-
-export * from './utils';
+export { default as FileUtils } from './FileUtils';

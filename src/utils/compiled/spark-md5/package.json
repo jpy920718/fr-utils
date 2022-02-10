@@ -1,0 +1,5 @@
+{
+  "name": "spark-md5",
+  "license": "MIT",
+  "types": "./index.d.ts"
+}
