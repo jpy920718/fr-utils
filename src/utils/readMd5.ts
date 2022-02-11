@@ -8,8 +8,7 @@ import WebWorker from 'web-worker:../works/md5.worker.ts';
  * @returns
  */
 export async function getMd5(file: Blob): Promise<string> {
-  const filereader = new FileReader(file);
-  const result: any = await filereader.readAsArrayBuffer(file);
+  const result: any = await FileReader.readAsArrayBuffer(file);
   const spark = new SparkMD5.ArrayBuffer();
   spark.append(result);
   const md5: string = spark.end();

@@ -1,6 +1,6 @@
 import SparkMD5 from 'spark-md5';
 import { FileUtilsOptions } from 'types';
-import { getMd5WithWorker, sliceFile } from './utils';
+import { getMd5, getMd5WithWorker, sliceFile } from './utils';
 import defaultOptions from './utils/defaultOptions';
 
 type FileReaderMethodType =
@@ -66,7 +66,7 @@ export default class FileUtils {
     return FileUtils.readAs(file, 'readAsArrayBuffer') as Promise<ArrayBuffer>;
   }
   readAsArrayBuffer(file?: Blob) {
-    file = file ?? this.file!
+    file = file ?? this.file!;
     return FileUtils.readAsArrayBuffer(file);
   }
 
@@ -75,7 +75,7 @@ export default class FileUtils {
     return FileUtils.readAs(file, 'readAsDataURL') as Promise<string>;
   }
   readAsDataURL(file: Blob) {
-    file = file ?? this.file!
+    file = file ?? this.file!;
     return FileUtils.readAsDataURL(file);
   }
 
@@ -84,7 +84,7 @@ export default class FileUtils {
     return FileUtils.readAs(file, 'readAsText') as Promise<string>;
   }
   readAsText(file: Blob) {
-    file = file ?? this.file!
+    file = file ?? this.file!;
     return FileUtils.readAsText(file);
   }
 
@@ -94,10 +94,7 @@ export default class FileUtils {
     if (useWorker) {
       return getMd5WithWorker(file);
     } else {
-      const result = await FileUtils.readAs(file, 'readAsArrayBuffer');
-      const spark = new SparkMD5.ArrayBuffer();
-      spark.append(result as ArrayBuffer);
-      return spark.end();
+      return getMd5(file);
     }
   }
   md5() {
