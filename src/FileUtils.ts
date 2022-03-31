@@ -74,7 +74,7 @@ export default class FileUtils {
     fileExist(file);
     return FileUtils.readAs(file, 'readAsDataURL') as Promise<string>;
   }
-  readAsDataURL(file: Blob) {
+  readAsDataURL(file?: Blob) {
     file = file ?? this.file!;
     return FileUtils.readAsDataURL(file);
   }
@@ -83,9 +83,34 @@ export default class FileUtils {
     fileExist(file);
     return FileUtils.readAs(file, 'readAsText') as Promise<string>;
   }
-  readAsText(file: Blob) {
+  readAsText(file?: Blob) {
     file = file ?? this.file!;
     return FileUtils.readAsText(file);
+  }
+
+  /**
+   * 返回图片原始对象
+   * @param file
+   * @returns
+   */
+  static async readImage(file: Blob) {
+    fileExist(file);
+    const src = await FileUtils.readAsDataURL(file);
+    return new Promise((resolve, reject) => {
+      const image = new Image();
+      image.onload = () => {
+        resolve(image);
+      };
+      image.onerror = () => {
+        reject('oops, something went wrong.');
+      };
+      image.src = src;
+    });
+  }
+
+  readImage(file?: Blob) {
+    file = file ?? this.file!;
+    return FileUtils.readImage(file);
   }
 
   static async md5(file: Blob, options = defaultOptions) {

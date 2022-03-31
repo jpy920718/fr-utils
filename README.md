@@ -83,9 +83,23 @@ const sliceFile = async () => {
 > 所有的实例方法使用的参数也可通过构造函数传递 `new FileUtils(file, options)`
 
 ### options 说明
-| 参数      | 说明                                        | 类型    |
-| --------- | ------------------------------------------- | ------- |
-| useWorker | 是否使用worker 线程计算hash，默认false      | Boolean |
-| useMd5    | 切片操作时是否给分片计算hash，默认true      | Boolean |
-| sliceSize | 切片操作时文件分片的大小，单位M，默认每片2M | Number  |
 
+| 参数      | 说明                                          | 类型    |
+| --------- | --------------------------------------------- | ------- |
+| useWorker | 是否使用 worker 线程计算 hash，默认 false     | Boolean |
+| useMd5    | 切片操作时是否给分片计算 hash，默认 true      | Boolean |
+| sliceSize | 切片操作时文件分片的大小，单位 M，默认每片 2M | Number  |
+
+## 获取图片原始对象
+
+```typescript
+import { FileUtils } from '@sbs/file-utils';
+
+// 1. 通过实例方法
+const reader = new FileUtils();
+const image = await reader.readImage(file);
+
+
+// 2. 通过静态方法
+const image = await FileUtils.readImage(file);
+```

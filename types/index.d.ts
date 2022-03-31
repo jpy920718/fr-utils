@@ -25,6 +25,7 @@ export declare class FileUtils {
   static readAsArrayBuffer(file: Blob): Promise<ArrayBuffer>;
   static readAsDataURL(file: Blob): Promise<string>;
   static readAsText(file: Blob): Promise<string>;
+  static readImage(file: Blob): Promise<HTMLImageElement>;
   static md5(file: Blob, options?: FileUtilsOptions): Promise<string>;
   static slice(
     file: Blob,
@@ -33,6 +34,7 @@ export declare class FileUtils {
   readAsArrayBuffer(file?: Blob): Promise<ArrayBuffer>;
   readAsDataURL(file?: Blob): Promise<string>;
   readAsText(file?: Blob): Promise<string>;
+  readImage(file?: Blob): Promise<HTMLImageElement>;
 
   md5(options?: FileUtilsOptions): Promise<string>;
   md5(file: Blob, options?: FileUtilsOptions): Promise<string>;
