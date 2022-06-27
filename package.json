@@ -1,6 +1,6 @@
 {
   "name": "@sbs/file-utils",
-  "version": "1.0.6-beta.1.3",
+  "version": "1.0.6-beta.2.1",
   "description": "",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",

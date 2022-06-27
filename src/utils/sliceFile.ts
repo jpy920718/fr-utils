@@ -5,10 +5,12 @@ import FileUtils from '../FileUtils';
 import SparkMD5 from 'spark-md5';
 import WebWorker from 'web-worker:../works/md5.worker.ts';
 
-const getMd5sWithWorker = (chunks: Blob[]) => {
+const getMd5sWithWorker = (
+  fileChnkList: { file: Blob; chunkIndex: number }[],
+) => {
   return new Promise((resolve, reject) => {
     const worker = new WebWorker();
-    worker.postMessage(chunks);
+    worker.postMessage(fileChnkList);
     worker.onmessage = (e: MessageEvent) => {
       worker.terminate(); // close this worker thread
       resolve(e.data);
@@ -19,19 +21,21 @@ const getMd5sWithWorker = (chunks: Blob[]) => {
   });
 };
 
-const getMd5s = async (chunks: Blob[]) => {
+const getMd5s = async (fileChunkList: { file: Blob; chunkIndex: number }[]) => {
   const spark = new SparkMD5.ArrayBuffer();
   const resultList = await Promise.all(
-    chunks.map((chunk) => FileUtils.readAsArrayBuffer(chunk)),
+    fileChunkList.map((fileChunk) =>
+      FileUtils.readAsArrayBuffer(fileChunk.file),
+    ),
   );
 
-  return resultList.map((result) => {
+  return resultList.map((result, index) => {
     spark.append(result);
     let sparkStatus = JSON.stringify(spark.getState());
     const md5 = spark.end();
     spark.reset();
     spark.setState(JSON.parse(sparkStatus));
-    return md5;
+    return { md5, part_num: index };
   });
 };
 
@@ -50,29 +54,33 @@ export async function sliceFile(
   const chunkSize = (sliceSize ?? 2) * 1024 * 1024,
     sliceTotal = Math.ceil(file.size / chunkSize); // 切片后的总chunk数
 
-  const chunks = range(sliceTotal).map((chunkIndex) => {
+  const fileChunkList = range(sliceTotal).map((chunkIndex) => {
     const start = chunkIndex * chunkSize, // 每一片chunk起始下标
       end = max([start + chunkSize, file]), // 每一片chunk结束下标
-      fileBlob = file.slice(start, end as number); // 使用Blob的slice方法回去文件的分片，返回值的Blob
-    return fileBlob;
+      fileBlob = file.slice(start, end as number); // 使用Blob的slice方法获取文件的分片，返回值的Blob
+    return {
+      file: fileBlob,
+      chunkIndex,
+    };
   }); // 根据size 对文件切割后的chunk list, 每一个元素都是Blob类型数据
 
   // 如果useMd5为false 只返回文件切片数组
   if (!useMd5) {
-    return { chunks };
+    return { fileChunkList, total_slice: sliceTotal };
   }
 
   const getChunksMD5 = async () => {
     if (useWorker) {
-      return await getMd5sWithWorker(chunks);
+      return await getMd5sWithWorker(fileChunkList);
     }
-    return await getMd5s(chunks);
+    return await getMd5s(fileChunkList);
   };
 
   const md5s = await getChunksMD5();
 
   return {
-    chunks,
+    fileChunkList,
     md5s,
+    total_slice: sliceTotal,
   };
 }

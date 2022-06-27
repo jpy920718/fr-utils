@@ -86,7 +86,7 @@ const sliceFile = async () => {
 
 | 参数      | 说明                                          | 类型    |
 | --------- | --------------------------------------------- | ------- |
-| useWorker | 是否使用 worker 线程计算 hash，默认 false     | Boolean |
+| useWorker | 是否使用 worker 线程计算 hash，默认 true     | Boolean |
 | useMd5    | 切片操作时是否给分片计算 hash，默认 true      | Boolean |
 | sliceSize | 切片操作时文件分片的大小，单位 M，默认每片 2M | Number  |
 

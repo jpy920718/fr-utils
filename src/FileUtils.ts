@@ -1,4 +1,3 @@
-import SparkMD5 from 'spark-md5';
 import { FileUtilsOptions } from 'types';
 import { getMd5, getMd5WithWorker, sliceFile } from './utils';
 import defaultOptions from './utils/defaultOptions';
@@ -40,7 +39,7 @@ export default class FileUtils {
 
   constructor(file?: Blob, options = defaultOptions) {
     this.file = file;
-    this.options = options;
+    this.options = { ...defaultOptions, ...options };
   }
   static readAs(
     file: Blob,
@@ -54,8 +53,11 @@ export default class FileUtils {
       filereader.onload = () => {
         resolve(filereader.result);
       };
-      filereader.onerror = function () {
-        reject('oops, something went wrong.');
+      filereader.onerror = function (
+        this: FileReader,
+        ev: ProgressEvent<FileReader>,
+      ): any {
+        reject(ev);
       };
       filereader[type](file);
     });
@@ -101,8 +103,8 @@ export default class FileUtils {
       image.onload = () => {
         resolve(image);
       };
-      image.onerror = () => {
-        reject('oops, something went wrong.');
+      image.onerror = (ev) => {
+        reject(ev);
       };
       image.src = src;
     });

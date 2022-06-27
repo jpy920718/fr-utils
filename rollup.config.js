@@ -26,12 +26,11 @@ export default defineConfig({
     {
       file: 'dist/index.esm.js',
       format: 'esm',
-      name: 'FileUtils',
     },
     {
       file: 'dist/index.js',
       format: 'umd',
-      name: 'FileUtils',
+      name: 'file-utils'
     },
   ],
   plugins: [workerLoader(), typescript(), terser()],

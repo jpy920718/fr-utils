@@ -1,1 +1,2 @@
-export { default as FileUtils } from './FileUtils';
+import FileUtils from './FileUtils';
+export { FileUtils };

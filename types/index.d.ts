@@ -17,8 +17,15 @@ declare interface FileUtilsOptions extends SliceOptionType {
   useWorker?: boolean; // 是否使用web-worker 计算文件hash, 默认：false
 }
 interface SliceReturnType {
-  chunks: Blob[];
-  md5s?: string[];
+  fileChunkList: {
+    file: Blob;
+    chunkIndex: number;
+  }[];
+  md5s?: {
+    md5: string;
+    part_num: number;
+  }[];
+  total_slice: number;
 }
 export declare class FileUtils {
   constructor(file?: Blob, options?: FileUtilsOptions);
