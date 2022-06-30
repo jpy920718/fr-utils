@@ -1,4 +1,4 @@
-# @sbs/file-utils
+# fr-utils
 
 文件处理公共方法，包括文件读取，大文件 hash 计算，大文件切片处理。
 
@@ -7,7 +7,7 @@
 通过 yarn
 
 ```bash
-  yarn add @sbs/file-uitls
+  yarn add fr-utils
 ```
 
 ## 使用方式
@@ -23,7 +23,7 @@ const filereader = new FileUtils(file, options);
 > 通过实例的方式读取文件，file 参数可通过构造函数传递 `new FileUtils(file)`
 
 ```typescript
-import { FileUtils } from '@sbs/file-utils';
+import { FileUtils } from 'fr-utils';
 
 const readFile = async (file: File) => {
   // 1. 通过实例方法
@@ -41,7 +41,7 @@ const readFile = async (file: File) => {
 - 不使用 webworker 计算 hash
 
 ```typescript
-import { FileUtils } from '@sbs/file-utils';
+import { FileUtils } from 'fr-utils';
 const readMd5 = async (file) => {
   // 1. 通过实例方法
   const reader = new FileUtils();
@@ -54,7 +54,7 @@ const readMd5 = async (file) => {
 - 使用 webworker 计算 hash
 
 ```typescript
-import { FileUtils } from '@sbs/file-utils';
+import { FileUtils } from 'fr-utils';
 const readMd5 = async (file) => {
   // 1. 通过实例方法
   const reader = new FileUtils();
@@ -81,7 +81,7 @@ const readMd5 = async (file) => {
 - total 切片总数
 
 ```typescript
-import { FileUtils } from '@sbs/file-utils';
+import { FileUtils } from 'fr-utils';
 
 const sliceFile = async () => {
   // 1. 通过实例方法
@@ -98,7 +98,7 @@ const sliceFile = async () => {
 ## 获取图片原始对象
 
 ```typescript
-import { FileUtils } from '@sbs/file-utils';
+import { FileUtils } from 'fr-utils';
 
 // 1. 通过实例方法
 const reader = new FileUtils();
