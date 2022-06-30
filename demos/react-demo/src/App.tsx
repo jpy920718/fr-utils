@@ -1,5 +1,5 @@
 import { Button, Layout, Upload } from 'antd';
-import { FileUtils } from '@sbs/file-utils';
+import { FileUtils } from 'fr-utils';
 import { useState } from 'react';
 function App() {
   const [loading, setLoading] = useState(false);
