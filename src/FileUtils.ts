@@ -45,6 +45,7 @@ export default class FileUtils {
     file: Blob,
     type: FileReaderMethodType,
   ): Promise<string | ArrayBuffer | null> {
+    fileExist(file);
     if (typeof window === 'undefined') {
       throw new Error('Can only use FileReader in your browser');
     }
@@ -64,7 +65,6 @@ export default class FileUtils {
   }
 
   static readAsArrayBuffer(file: Blob) {
-    fileExist(file);
     return FileUtils.readAs(file, 'readAsArrayBuffer') as Promise<ArrayBuffer>;
   }
   readAsArrayBuffer(file?: Blob) {
@@ -73,7 +73,6 @@ export default class FileUtils {
   }
 
   static readAsDataURL(file: Blob) {
-    fileExist(file);
     return FileUtils.readAs(file, 'readAsDataURL') as Promise<string>;
   }
   readAsDataURL(file?: Blob) {
@@ -82,7 +81,6 @@ export default class FileUtils {
   }
 
   static readAsText(file: Blob) {
-    fileExist(file);
     return FileUtils.readAs(file, 'readAsText') as Promise<string>;
   }
   readAsText(file?: Blob) {

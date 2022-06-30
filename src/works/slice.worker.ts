@@ -499,44 +499,65 @@
   };
   return SparkMD5;
 });
-const ctx: WorkerGlobalScope & typeof globalThis & { SparkMd5: any } =
-  self as any;
 
-ctx.addEventListener('message', (e: MessageEvent) => {
-  const file = <
-    | File
-    | Blob
-    | {
-        file: Blob;
-        chunkIndex: number;
-      }[]
-  >e.data;
+//
+const ctx: WorkerGlobalScope & typeof globalThis & { SparkMD5: any } =
+  self as any;
+const getSingleMd5 = (arrayBuffer) => {
+  const spark = new ctx.SparkMD5.ArrayBuffer();
+  spark.append(arrayBuffer);
+  return spark.end();
+};
+ctx.addEventListener('message', (e) => {
+  const {
+    file,
+    options: { sliceSize = 2 },
+  } = e.data as {
+    file: Blob;
+    options: { sliceSize: number };
+  };
+  debugger;
+  const fileSize = file.size;
+  const chunkSize = sliceSize * 1024 * 1024;
+  const sliceTotal = Math.ceil(fileSize / chunkSize);
+  const fileChunkList = Array.from({ length: sliceTotal }, (_, i) => i).map(
+    (chunkIndex) => {
+      const start = chunkIndex * chunkSize,
+        end = start + chunkSize,
+        fileBlob = file.slice(start, end);
+      return {
+        file: fileBlob,
+        part_num: chunkIndex,
+        start,
+        end,
+      };
+    },
+  );
   const spark = new ctx.SparkMD5.ArrayBuffer();
   const filereader = new ctx.FileReaderSync();
 
-  if (Array.isArray(file)) {
-    // 生成每个chunk的md5值
-    const fileChunkList = file;
-    const resultList = fileChunkList.map((fileChunk) => {
-      const arrayBuffer = filereader.readAsArrayBuffer(fileChunk.file);
-      return arrayBuffer;
+  const resultList = fileChunkList.map((fileChunk) => {
+    return Object.assign({}, fileChunk, {
+      arrayBuffer: filereader.readAsArrayBuffer(fileChunk.file),
     });
-    const md5list = resultList.map((result, index) => {
-      spark.append(result);
-      let sparkStatus = JSON.stringify(spark.getState());
-      const md5 = spark.end();
-      spark.reset();
-      spark.setState(JSON.parse(sparkStatus));
-      return { md5, part_num: index };
-    });
-    self.postMessage(md5list);
-  } else {
-    // 生成全量的md5值
-    const arrayBuffer = filereader.readAsArrayBuffer(file);
-    spark.append(arrayBuffer);
-    const md5: string = spark.end();
-    self.postMessage(md5);
-  }
-});
+  });
 
-export default {};
+  const sliceList = resultList.map((result) => {
+    const { arrayBuffer } = result;
+    spark.append(arrayBuffer);
+    const md5 = getSingleMd5(arrayBuffer);
+    return {
+      md5,
+      file: result.file,
+      part_num: result.part_num,
+      start: result.start,
+      end: result.end,
+    };
+  });
+  ctx.postMessage({
+    file,
+    md5: spark.end(),
+    chunks: sliceList,
+    total: sliceTotal,
+  });
+});

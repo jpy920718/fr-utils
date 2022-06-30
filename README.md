@@ -10,6 +10,12 @@
   yarn add @sbs/file-uitls
 ```
 
+## 使用方式
+
+```typescript
+const filereader = new FileUtils(file, options);
+```
+
 ## 文读取方式
 
 对原生 FileReader 进行封装，异步获取文件读取结果，已提供的读取方式 3 中，`readAsArrayBuffer` `readAsDataURL` `readAsText`,使用方式如下：
@@ -39,9 +45,9 @@ import { FileUtils } from '@sbs/file-utils';
 const readMd5 = async (file) => {
   // 1. 通过实例方法
   const reader = new FileUtils();
-  const md5 = reader.md5(file);
+  const md5 = reader.md5(file, { useWorker: false });
   // 2. 直接使用 FileUtils的静态方法
-  const md5 = await FileUtils.md5(file);
+  const md5 = await FileUtils.md5(file, { useWorker: false });
 };
 ```
 
@@ -52,20 +58,27 @@ import { FileUtils } from '@sbs/file-utils';
 const readMd5 = async (file) => {
   // 1. 通过实例方法
   const reader = new FileUtils();
-  const md5 = reader.md5(file, { useWorker: true });
+  const md5 = reader.md5(file);
   // 2. 直接使用 FileUtils的静态方法
-  const md5 = await FileUtils.md5(file, { useWorker: true });
+  const md5 = await FileUtils.md5(file);
 };
 ```
 
 ## 文件切片
 
-通过调用 slice 方法实现文件切片
+通过调用 `slice` 方法实现文件切片, 文件切片在 `web-worker` 线程里实现切片和 md5 值计算
 
 返回参数:
 
 - chunks 切片数组
-- md5s 切片 md5 值
+  - file 分片文件
+  - md5 分片 hash
+  - start 分片开始下标
+  - end 分片结束下标
+  - part_num 分片编号
+- file 原文件
+- md5 文件 hash
+- total 切片总数
 
 ```typescript
 import { FileUtils } from '@sbs/file-utils';
@@ -82,14 +95,6 @@ const sliceFile = async () => {
 
 > 所有的实例方法使用的参数也可通过构造函数传递 `new FileUtils(file, options)`
 
-### options 说明
-
-| 参数      | 说明                                          | 类型    |
-| --------- | --------------------------------------------- | ------- |
-| useWorker | 是否使用 worker 线程计算 hash，默认 true     | Boolean |
-| useMd5    | 切片操作时是否给分片计算 hash，默认 true      | Boolean |
-| sliceSize | 切片操作时文件分片的大小，单位 M，默认每片 2M | Number  |
-
 ## 获取图片原始对象
 
 ```typescript
@@ -99,7 +104,14 @@ import { FileUtils } from '@sbs/file-utils';
 const reader = new FileUtils();
 const image = await reader.readImage(file);
 
-
 // 2. 通过静态方法
 const image = await FileUtils.readImage(file);
 ```
+
+### options 说明
+
+| 参数      | 说明                                          | 类型    |
+| --------- | --------------------------------------------- | ------- |
+| useWorker | 是否使用 worker 线程计算 hash，默认 true      | Boolean |
+| useMd5    | 切片操作时是否给分片计算 hash，默认 true      | Boolean |
+| sliceSize | 切片操作时文件分片的大小，单位 M，默认每片 2M | Number  |

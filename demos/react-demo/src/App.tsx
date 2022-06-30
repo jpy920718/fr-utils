@@ -5,21 +5,16 @@ function App() {
   const [loading, setLoading] = useState(false);
   const handleUpload = async (options: any) => {
     setLoading(true);
-    // const fileUtils = new FileUtils(options.file, {
-    //   sliceSize: 3,
-    //   useWorker: false,
-    // });
-
-    // const fileMd5 = await fileUtils.md5();
-    // const slices = await fileUtils.slice();
-    // const md5 = await fileUtils.md5(slices.fileChunkList[0].file);
-
-    const workerUtils = new FileUtils(options.file, { sliceSize: 5 });
-    // const workerFileMd5 = await workerUtils.md5();
+    console.log(options.file);
+    const workerUtils = new FileUtils(options.file, { sliceSize: 50 });
+    const arraryBuffer = await workerUtils.readAsArrayBuffer();
+    const dataURl = await workerUtils.readAsDataURL();
+    const text = await workerUtils.readAsText();
+    const workerFileMd5 = await workerUtils.md5();
     const workerSlices = await workerUtils.slice();
-    // const workermd5 = await workerUtils.md5(workerSlices.chunks[2]);
+    // const workermd5 = await workerUtils.md5(workerSlices.fileChunkList[4].file);
     setLoading(false);
-    console.log(' end', workerSlices);
+    console.log(' end', workerSlices, workerFileMd5);
     console.time();
   };
   return (
